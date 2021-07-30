@@ -3,7 +3,7 @@ import Searchbar from './components/Searchbar';
 import Container from './components/Container'
 import ImageGallery from './components/ImageGallery';
 import Loader from './components/Loader'
-// import Modal from './components/Modal/Modal';
+import Modal from './components/Modal/Modal';
 import Button from './components/Button';
 import hitsApi from './services/hits-api';
 // import PropTypes from 'prop-types';
@@ -15,35 +15,49 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   // const [showModal, setShowModal] = useState(false);
-  // const [largeImageURL, setLargeImageURL] = useState('');
+  const [largeImageURL, setLargeImageURL] = useState('');
   // const [tags, setTags] = useState('');
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!query) {
+    if (query === '') {
       return;
     }
     setIsLoading(true);
 
-    hitsApi({ searchQuery: query, currentPage }).then(
-      responseHits => {
+    hitsApi({ searchQuery: query, currentPage })
+      .then(responseHits => {
         setHits(prevHits => [...prevHits, ...responseHits]);
-        setCurrentPage(prevCurrentPage => prevCurrentPage + 1);
       })
-      .catch(error => setError({ error: 'Sorry! Picture not found. Please try again later!!!' }))
-      .finally(() => setIsLoading(false));
-},[query, currentPage])
+      .then(() => {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth',
+        });
+      })
+          .catch(error => setError({ error: 'Sorry! Picture not found. Please try again later!!!' }))
+          .finally(() => setIsLoading(false));
+      }, [query, currentPage]);
 
-  const onChangeQuery = query => {
-    setQuery(query);
-    setCurrentPage(1);
-    setHits([]);
-    setError(null);
-  }
-  
-// onOpenModalImg
+    const onChangeQuery = query => {
+      setQuery(query);
+      setCurrentPage(1);
+      setHits([]);
+      setError(null);
+    }
 
-  return (
+    const onOpenModalImg = event => {
+      event.preventDefault();
+      if (event.target.nodeName === 'IMG') {
+        setLargeImageURL(event.target.dataset.image);
+      };
+    };
+
+    const toogleModal = () => {
+      setLargeImageURL('');
+    };
+
+    return (
       <>
         <Searchbar onSubmit={onChangeQuery} />
         
@@ -53,20 +67,25 @@ export default function App() {
 
           <ImageGallery
             hits={hits}
-            onOpenModalImg={()=> null}
+            onOpenModalImg={onOpenModalImg}
           />
 
-          {isLoading && <Loader/>}
+          {isLoading && <Loader />}
 
           {hits.length > 11 && !isLoading && (
-            <Button onClick={()=> null} />
+            <Button onClick={() => setCurrentPage(currentPage + 1)} />
           )}
           
-        
+          {largeImageURL && (
+            <Modal onClose={toogleModal}>
+              <img src={largeImageURL} alt="card" />
+            </Modal>
+          )
+          }
         </Container>
-        </>
+      </>
     );
-}
+};
 
 // class App extends Component {
 //   static propTypes = {
@@ -178,3 +197,4 @@ export default function App() {
 
 
 // export default App;
+  
