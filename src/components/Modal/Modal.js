@@ -3,27 +3,28 @@ import {createPortal} from 'react-dom';
 import '../../style.css';
 
 const modalRoot = document.querySelector('#modal-root');
-export default function Modal(props) {
+
+export default function Modal({onClose, children}) {
     useEffect(() => {
-        window.addEventListener('keydown', handleKeyDown)
-        return () => window.removeEventListener('keydown', handleKeyDown)
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
     });
 
     const handleKeyDown = event => {
         if (event.code === 'Escape') {
-            props.onClose();
+            onClose();
         };
     };
 
     const handleOverlayClick = event => {
         if (event.currentTarget === event.target) {
-            props.onClose();
+            onClose();
         };
     };
 
         return createPortal (
             <div className="Overlay" onClick={handleOverlayClick}>
-                <div className="Modal">{props.children}</div>
+                <div className="Modal">{children}</div>
             </div>,
             modalRoot,
         );

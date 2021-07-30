@@ -26,9 +26,11 @@ export default function App() {
     setIsLoading(true);
 
     hitsApi({ searchQuery: query, currentPage })
-      .then(responseHits => {
-        setHits(prevHits => [...prevHits, ...responseHits]);
+      .then(hits => {
+        setHits(prevState => [...prevState, ...hits])
+        
       })
+      
       .then(() => {
         window.scrollTo({
           top: document.body.scrollHeight,
@@ -46,12 +48,10 @@ export default function App() {
       setError(null);
     }
 
-    const onOpenModalImg = event => {
-      event.preventDefault();
-      if (event.target.nodeName === 'IMG') {
-        setLargeImageURL(event.target.dataset.image);
+    const onOpenModalImg = (largeImageURL) => {
+      setLargeImageURL(largeImageURL);
       };
-    };
+    
 
     const toogleModal = () => {
       setLargeImageURL('');

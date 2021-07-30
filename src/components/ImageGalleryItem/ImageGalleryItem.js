@@ -2,12 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import '../../style.css';
 
-const ImageGalleryItem = ({webformatURL, onClick, tags}) => (
+const ImageGalleryItem = ({webformatURL, onClick, largeImageURL, tags}) => (
     <img
         src={webformatURL}
         alt={tags}
         className="ImageGalleryItem-image"
-        onClick={onClick}
+        onClick={() => {
+            onClick({ largeImageURL })
+        }}
     />
 );
     
